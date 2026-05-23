@@ -31,6 +31,7 @@ like from inside the app.
 |---|---|---|
 | Labis (Austin 1) | 拉美士 1 | 2.41750, 103.04444 |
 | Labis (Austin 2) | 拉美士 2 | 2.42806, 103.03639 |
+| Segamat Buloh Kasap | 昔加末 巫罗加什 | 2.527677, 102.772178 |
 
 The app also seeds a default user display name (**Austin**), which stays
 editable via **Edit Name** in the app.
@@ -92,7 +93,7 @@ The service worker caches the app shell. When you push changes, bump the
 their next visit. The current value is:
 
 ```
-wnext-weathernextforjohor-202605230138
+wnext-weathernextforjohor-202605231122
 ```
 
 ---
