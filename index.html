@@ -1897,7 +1897,7 @@
         // unless SEED_VERSION is bumped in a future build.
         // ============================================================
         (function seedCompanyLocations() {
-            var SEED_VERSION = '3';
+            var SEED_VERSION = '4';
             var SEED_FLAG_KEY = 'weathernextforjohor__wnext_company_seed_version';
             var CUSTOM_KEY = 'weathernextforjohor__wnext_v41_custom_store';
             var FAV_KEY = 'weathernextforjohor__wnext_v41_favs_store';
@@ -1921,7 +1921,7 @@
                     {"id": "c_jh-labis-austin-2", "en": "Labis (Austin 2)", "zh": "拉美士 2", "lat": 2.42806, "lng": 103.03639, "t": 0, "p": 0, "em": false},
                     {"id": "c_jh-segamat-buloh-kasap", "en": "Segamat Buloh Kasap", "zh": "昔加末 巫罗加什", "lat": 2.527677, "lng": 102.772178, "t": 0, "p": 0, "em": false},
                     {"id": "c_jh-chaah-baru", "en": "Chaah Baru", "zh": "三合港", "lat": 2.148561, "lng": 103.052319, "t": 0, "p": 0, "em": false},
-                    {"id": "c_jh-bekok", "en": "Bekok", "zh": "美谷", "lat": 2.305833, "lng": 103.091389, "t": 0, "p": 0, "em": false}
+                    {"id": "c_jh-bekok", "en": "Bekok", "zh": "彼咯", "lat": 2.305833, "lng": 103.091389, "t": 0, "p": 0, "em": false}
                 ];
                 // Merge into whatever is already there (e.g. a deep-link
                 // location the user received before first cold start).
@@ -1937,13 +1937,39 @@
                     if (!haveIds[l.id]) existing.push(l);
                 });
                 localStorage.setItem(CUSTOM_KEY, JSON.stringify(existing));
-                // --- SEED name migration ----------------------------------
-                // This is a fresh first-release build for Johor — there are no
-                // earlier auto-seeded names in the wild to migrate, so no
-                // rewrite step is needed here. (Kept as a stub so the seed
-                // structure stays consistent with other WeatherNext builds;
-                // if a future build renames a seeded farm, add the old/new
-                // English names here exactly as the Jerantut build did.)
+                // --- SEED v4 name migration -------------------------------
+                // Bekok originally shipped (seed v3) with the Chinese name
+                // "美谷". The correct name is "彼咯". Devices that already ran
+                // seed v3 have the wrong name saved in the custom store, and
+                // bumping the version alone won't replace it (the merge above
+                // only ADDS missing farms). So here we explicitly rewrite the
+                // seeded farm's Chinese name — but ONLY when it still equals
+                // the known wrong auto-seeded value, so a user's own Edit
+                // Name choice is never overwritten.
+                try {
+                    var BEKOK_ID = "c_jh-bekok";
+                    var BEKOK_OLD_ZH = ["美谷"];
+                    var BEKOK_NEW_ZH = "彼咯";
+                    var custMig = JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]");
+                    if (Array.isArray(custMig)) {
+                        var migrated = false;
+                        custMig.forEach(function (l) {
+                            if (l && l.id === BEKOK_ID && BEKOK_OLD_ZH.indexOf(l.zh) !== -1) {
+                                l.zh = BEKOK_NEW_ZH; migrated = true;
+                            }
+                        });
+                        if (migrated) localStorage.setItem(CUSTOM_KEY, JSON.stringify(custMig));
+                    }
+                    // Also fix a stale rename-store entry if it still holds the
+                    // old auto-seeded name (the rename store overrides the
+                    // custom store when the app renders names).
+                    var renMig = JSON.parse(localStorage.getItem(RENAME_KEY) || "{}");
+                    if (renMig && renMig[BEKOK_ID] &&
+                        BEKOK_OLD_ZH.indexOf(renMig[BEKOK_ID].zh) !== -1) {
+                        renMig[BEKOK_ID].zh = BEKOK_NEW_ZH;
+                        localStorage.setItem(RENAME_KEY, JSON.stringify(renMig));
+                    }
+                } catch (e) { console.warn('[company-seed] Bekok name migration skipped', e); }
                 // ----------------------------------------------------------
                 // Auto-favourite the seeded farms so they pin to the top on
                 // first launch (matches the app's behaviour for user-added
