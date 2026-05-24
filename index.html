@@ -1890,14 +1890,14 @@
         // On the VERY FIRST launch this seeds:
         //   - the company display name (so the app shows it with no
         //     onboarding prompt — but it stays editable via Edit Name)
-        //   - 3 company farm(s) into customLocations
+        //   - 5 company farm(s) into customLocations
         // After that the user has full control: rename, edit, delete
         // (soft + permanent), add new farms, receive shared locations —
         // exactly like the generic build. The seed never runs again
         // unless SEED_VERSION is bumped in a future build.
         // ============================================================
         (function seedCompanyLocations() {
-            var SEED_VERSION = '2';
+            var SEED_VERSION = '3';
             var SEED_FLAG_KEY = 'weathernextforjohor__wnext_company_seed_version';
             var CUSTOM_KEY = 'weathernextforjohor__wnext_v41_custom_store';
             var FAV_KEY = 'weathernextforjohor__wnext_v41_favs_store';
@@ -1919,7 +1919,9 @@
                 var seedLocs = [
                     {"id": "c_jh-labis-austin-1", "en": "Labis (Austin 1)", "zh": "拉美士 1", "lat": 2.41750, "lng": 103.04444, "t": 0, "p": 0, "em": false},
                     {"id": "c_jh-labis-austin-2", "en": "Labis (Austin 2)", "zh": "拉美士 2", "lat": 2.42806, "lng": 103.03639, "t": 0, "p": 0, "em": false},
-                    {"id": "c_jh-segamat-buloh-kasap", "en": "Segamat Buloh Kasap", "zh": "昔加末 巫罗加什", "lat": 2.527677, "lng": 102.772178, "t": 0, "p": 0, "em": false}
+                    {"id": "c_jh-segamat-buloh-kasap", "en": "Segamat Buloh Kasap", "zh": "昔加末 巫罗加什", "lat": 2.527677, "lng": 102.772178, "t": 0, "p": 0, "em": false},
+                    {"id": "c_jh-chaah-baru", "en": "Chaah Baru", "zh": "三合港", "lat": 2.148561, "lng": 103.052319, "t": 0, "p": 0, "em": false},
+                    {"id": "c_jh-bekok", "en": "Bekok", "zh": "美谷", "lat": 2.305833, "lng": 103.091389, "t": 0, "p": 0, "em": false}
                 ];
                 // Merge into whatever is already there (e.g. a deep-link
                 // location the user received before first cold start).
@@ -1952,7 +1954,7 @@
                     favs = rawF ? (JSON.parse(rawF) || []) : [];
                     if (!Array.isArray(favs)) favs = [];
                 } catch (e) { favs = []; }
-                var seedIds = ["c_jh-labis-austin-1", "c_jh-labis-austin-2", "c_jh-segamat-buloh-kasap"];
+                var seedIds = ["c_jh-labis-austin-1", "c_jh-labis-austin-2", "c_jh-segamat-buloh-kasap", "c_jh-chaah-baru", "c_jh-bekok"];
                 seedIds.forEach(function (id) {
                     if (favs.indexOf(id) === -1) favs.push(id);
                 });
