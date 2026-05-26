@@ -3,7 +3,7 @@
 // Version 1.0.0 — bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforjohor-202605250757';
+const CACHE_VERSION = 'wnext-weathernextforjohor-202605260834';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;
@@ -82,22 +82,22 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (request.method !== 'GET') return;
 
-  // 1. Firebase, Gemini, Google APIs — NEVER cache (auth + real-time)
+  // 1. Firebase, Gemini, Google APIs — do NOT intercept at all.
+  //    These include the Firebase SDK JavaScript modules served from
+  //    gstatic.com/firebasejs/... . If the SW catches a failed request here
+  //    and substitutes a JSON 503 Response, the browser tries to execute that
+  //    JSON as an ES module — which throws a SyntaxError and kills the entire
+  //    type="module" script, producing a permanently blank page on every load.
+  //    By returning without calling event.respondWith(), the browser performs
+  //    its native fetch. A genuine network failure then surfaces as a normal
+  //    rejected fetch / failed import, which the app already handles
+  //    gracefully — instead of poisoned JSON masquerading as a script.
   if (
     url.hostname.includes('firebaseio.com') ||
     url.hostname.includes('googleapis.com') ||
     url.hostname.includes('firebase') ||
     url.hostname.includes('gstatic.com') && url.pathname.includes('firebasejs')
   ) {
-    // Network-only, but allow graceful failure
-    event.respondWith(
-      fetch(request).catch(() => {
-        return new Response(
-          JSON.stringify({ error: 'offline', message: 'Network unavailable' }),
-          { status: 503, headers: { 'Content-Type': 'application/json' } }
-        );
-      })
-    );
     return;
   }
 
