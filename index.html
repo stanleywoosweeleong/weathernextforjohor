@@ -1957,7 +1957,7 @@
         // unless SEED_VERSION is bumped in a future build.
         // ============================================================
         (function seedCompanyLocations() {
-            var SEED_VERSION = '5';
+            var SEED_VERSION = '6';
             var SEED_FLAG_KEY = 'weathernextforjohor__wnext_company_seed_version';
             var CUSTOM_KEY = 'weathernextforjohor__wnext_v41_custom_store';
             var FAV_KEY = 'weathernextforjohor__wnext_v41_favs_store';
@@ -1982,7 +1982,7 @@
                     {"id": "c_jh-segamat-buloh-kasap", "en": "Segamat Buloh Kasap", "zh": "昔加末 巫罗加什", "lat": 2.527677, "lng": 102.772178, "t": 0, "p": 0, "em": false},
                     {"id": "c_jh-chaah-baru", "en": "Chaah Baru", "zh": "三合港", "lat": 2.148561, "lng": 103.052319, "t": 0, "p": 0, "em": false},
                     {"id": "c_jh-bekok", "en": "Bekok", "zh": "彼咯", "lat": 2.305833, "lng": 103.091389, "t": 0, "p": 0, "em": false},
-                    {"id": "c_jh-jementah", "en": "Jementah", "zh": "利民达", "lat": 2.0639, "lng": 102.5667, "t": 0, "p": 0, "em": false}
+                    {"id": "c_jh-jementah", "en": "Jementah", "zh": "利民达", "lat": 2.433331, "lng": 102.683331, "t": 0, "p": 0, "em": false}
                 ];
                 // Merge into whatever is already there (e.g. a deep-link
                 // location the user received before first cold start).
@@ -2031,6 +2031,38 @@
                         localStorage.setItem(RENAME_KEY, JSON.stringify(renMig));
                     }
                 } catch (e) { console.warn('[company-seed] Bekok name migration skipped', e); }
+                // ----------------------------------------------------------
+                // --- SEED v6 coordinate migration -------------------------
+                // Jementah originally shipped (seed v5) with the wrong GPS
+                // position 2.0639, 102.5667. The correct position is
+                // 2.433331, 102.683331. Devices that already ran seed v5 have
+                // the wrong coordinates saved in the custom store, and bumping
+                // the version alone won't fix them (the merge above only ADDS
+                // missing farms). So here we explicitly rewrite the seeded
+                // farm's lat/lng — but ONLY when they still equal the known
+                // wrong auto-seeded values, so a user's own Edit GPS choice is
+                // never overwritten.
+                try {
+                    var JMT_ID = "c_jh-jementah";
+                    var JMT_OLD_LAT = 2.0639, JMT_OLD_LNG = 102.5667;
+                    var JMT_NEW_LAT = 2.433331, JMT_NEW_LNG = 102.683331;
+                    var coordMatch = function (v, target) {
+                        return typeof v === 'number' && Math.abs(v - target) < 0.0001;
+                    };
+                    var custJmt = JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]");
+                    if (Array.isArray(custJmt)) {
+                        var jmtMigrated = false;
+                        custJmt.forEach(function (l) {
+                            if (l && l.id === JMT_ID &&
+                                coordMatch(l.lat, JMT_OLD_LAT) && coordMatch(l.lng, JMT_OLD_LNG)) {
+                                l.lat = JMT_NEW_LAT; l.lng = JMT_NEW_LNG; jmtMigrated = true;
+                            }
+                        });
+                        if (jmtMigrated) localStorage.setItem(CUSTOM_KEY, JSON.stringify(custJmt));
+                    }
+                    // The rename store only holds name overrides, not GPS, so
+                    // it needs no coordinate fix here.
+                } catch (e) { console.warn('[company-seed] Jementah coordinate migration skipped', e); }
                 // ----------------------------------------------------------
                 // Auto-favourite the seeded farms so they pin to the top on
                 // first launch (matches the app's behaviour for user-added
