@@ -35,6 +35,7 @@ like from inside the app.
 | Chaah Baru | 三合港 | 2.148561, 103.052319 |
 | Bekok | 彼咯 | 2.305833, 103.091389 |
 | Jementah | 利民达 | 2.433331, 102.683331 |
+| Tenang Hot Spring | 丁能 热水池 | 2.481236, 103.058050 |
 
 The app also seeds a default user display name (**Austin**), which stays
 editable via **Edit Name** in the app.
@@ -96,7 +97,7 @@ The service worker caches the app shell. When you push changes, bump the
 their next visit. The current value is:
 
 ```
-wnext-weathernextforjohor-202605271304
+wnext-weathernextforjohor-202605291008
 ```
 
 ---
