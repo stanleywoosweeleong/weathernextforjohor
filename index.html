@@ -1950,14 +1950,14 @@
         // On the VERY FIRST launch this seeds:
         //   - the company display name (so the app shows it with no
         //     onboarding prompt — but it stays editable via Edit Name)
-        //   - 7 company farm(s) into customLocations
+        //   - 6 company farm(s) into customLocations
         // After that the user has full control: rename, edit, delete
         // (soft + permanent), add new farms, receive shared locations —
         // exactly like the generic build. The seed never runs again
         // unless SEED_VERSION is bumped in a future build.
         // ============================================================
         (function seedCompanyLocations() {
-            var SEED_VERSION = '7';
+            var SEED_VERSION = '9';
             var SEED_FLAG_KEY = 'weathernextforjohor__wnext_company_seed_version';
             var CUSTOM_KEY = 'weathernextforjohor__wnext_v41_custom_store';
             var FAV_KEY = 'weathernextforjohor__wnext_v41_favs_store';
@@ -1977,8 +1977,7 @@
                     localStorage.setItem(NAME_ASCII_KEY, "Austin");
                 }
                 var seedLocs = [
-                    {"id": "c_jh-labis-austin-1", "en": "Labis (Austin 1)", "zh": "拉美士 1", "lat": 2.41750, "lng": 103.04444, "t": 0, "p": 0, "em": false},
-                    {"id": "c_jh-labis-austin-2", "en": "Labis (Austin 2)", "zh": "拉美士 2", "lat": 2.42806, "lng": 103.03639, "t": 0, "p": 0, "em": false},
+                    {"id": "c_jh-labis-austin-2", "en": "Labis - Austin", "zh": "拉美士 - Austin", "lat": 2.42806, "lng": 103.03639, "t": 0, "p": 0, "em": false},
                     {"id": "c_jh-segamat-buloh-kasap", "en": "Segamat Buloh Kasap", "zh": "昔加末 巫罗加什", "lat": 2.527677, "lng": 102.772178, "t": 0, "p": 0, "em": false},
                     {"id": "c_jh-chaah-baru", "en": "Chaah Baru", "zh": "三合港", "lat": 2.148561, "lng": 103.052319, "t": 0, "p": 0, "em": false},
                     {"id": "c_jh-bekok", "en": "Bekok", "zh": "彼咯", "lat": 2.305833, "lng": 103.091389, "t": 0, "p": 0, "em": false},
@@ -2065,6 +2064,118 @@
                     // it needs no coordinate fix here.
                 } catch (e) { console.warn('[company-seed] Jementah coordinate migration skipped', e); }
                 // ----------------------------------------------------------
+                // --- SEED v8 deletion migration ---------------------------
+                // Labis (Austin 1) — originally seeded in v1 (2.41750,
+                // 103.04444) — is being retired. The seed-merge logic above
+                // only ADDS missing farms; it never deletes existing ones.
+                // So on devices already installed at v1–v7, the farm is
+                // still in the custom store, the rename store, and possibly
+                // the favourites list. This block removes it from all three
+                // — but ONLY when its English name, Chinese name, and GPS
+                // all still match the original auto-seeded values, so a
+                // user who edited any of those fields (or by coincidence
+                // gave their own farm this id) keeps their data.
+                try {
+                    var DEL_ID = "c_jh-labis-austin-1";
+                    var DEL_EN = "Labis (Austin 1)";
+                    var DEL_ZH = "拉美士 1";
+                    var DEL_LAT = 2.41750, DEL_LNG = 103.04444;
+                    var coordEq = function (v, target) {
+                        return typeof v === 'number' && Math.abs(v - target) < 0.0001;
+                    };
+                    // 1. Custom store: remove only if still pristine seeded record.
+                    var custDel = JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]");
+                    if (Array.isArray(custDel)) {
+                        var custBefore = custDel.length;
+                        custDel = custDel.filter(function (l) {
+                            if (!l || l.id !== DEL_ID) return true;
+                            var pristine = l.en === DEL_EN && l.zh === DEL_ZH &&
+                                           coordEq(l.lat, DEL_LAT) && coordEq(l.lng, DEL_LNG);
+                            return !pristine; // keep if user-edited
+                        });
+                        if (custDel.length !== custBefore) {
+                            localStorage.setItem(CUSTOM_KEY, JSON.stringify(custDel));
+                        }
+                    }
+                    // 2. Rename store: clear only if it still holds an
+                    //    auto-seeded value (en or zh). If a user already
+                    //    typed something else, leave it alone — that record
+                    //    will also have been kept in the custom store above.
+                    var renDel = JSON.parse(localStorage.getItem(RENAME_KEY) || "{}");
+                    if (renDel && renDel[DEL_ID]) {
+                        var entry = renDel[DEL_ID];
+                        var renPristine = (entry.en === DEL_EN || typeof entry.en !== 'string') &&
+                                          (entry.zh === DEL_ZH || typeof entry.zh !== 'string');
+                        if (renPristine) {
+                            delete renDel[DEL_ID];
+                            localStorage.setItem(RENAME_KEY, JSON.stringify(renDel));
+                        }
+                    }
+                    // 3. Favourites list: only meaningful if we actually
+                    //    removed the farm from the custom store. Whether
+                    //    favs is an array of ids or array of objects with
+                    //    .id, drop entries matching DEL_ID.
+                    var stillExists = Array.isArray(custDel) && custDel.some(function (l) {
+                        return l && l.id === DEL_ID;
+                    });
+                    if (!stillExists) {
+                        var favDel = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
+                        if (Array.isArray(favDel)) {
+                            var favBefore = favDel.length;
+                            favDel = favDel.filter(function (f) {
+                                if (typeof f === 'string') return f !== DEL_ID;
+                                if (f && typeof f === 'object') return f.id !== DEL_ID;
+                                return true;
+                            });
+                            if (favDel.length !== favBefore) {
+                                localStorage.setItem(FAV_KEY, JSON.stringify(favDel));
+                            }
+                        }
+                    }
+                } catch (e) { console.warn('[company-seed] Labis (Austin 1) deletion migration skipped', e); }
+                // ----------------------------------------------------------
+                // --- SEED v9 name migration -------------------------------
+                // Labis (Austin 2) is being renamed to "Labis - Austin" (en)
+                // and "拉美士 - Austin" (zh). The id stays the same — that's
+                // important so Firebase cloud-sync entries and any favourite
+                // / rename references continue to resolve. The seed-merge
+                // only ADDS missing farms, so existing installs need an
+                // explicit rewrite of both the custom store and (if used)
+                // the rename store. Only rewrite when the stored names
+                // still match the known auto-seeded values, so a user's
+                // own Edit Name choice is never clobbered.
+                try {
+                    var REN_ID = "c_jh-labis-austin-2";
+                    var REN_OLD_EN = ["Labis (Austin 2)"];
+                    var REN_OLD_ZH = ["拉美士 2"];
+                    var REN_NEW_EN = "Labis - Austin";
+                    var REN_NEW_ZH = "拉美士 - Austin";
+                    // 1. Custom store.
+                    var custRen = JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]");
+                    if (Array.isArray(custRen)) {
+                        var renDirty = false;
+                        custRen.forEach(function (l) {
+                            if (!l || l.id !== REN_ID) return;
+                            if (REN_OLD_EN.indexOf(l.en) !== -1) { l.en = REN_NEW_EN; renDirty = true; }
+                            if (REN_OLD_ZH.indexOf(l.zh) !== -1) { l.zh = REN_NEW_ZH; renDirty = true; }
+                        });
+                        if (renDirty) localStorage.setItem(CUSTOM_KEY, JSON.stringify(custRen));
+                    }
+                    // 2. Rename store — overrides the custom store at render
+                    //    time, so a stale entry here would mask the new name.
+                    var renStore = JSON.parse(localStorage.getItem(RENAME_KEY) || "{}");
+                    if (renStore && renStore[REN_ID]) {
+                        var rsDirty = false;
+                        if (REN_OLD_EN.indexOf(renStore[REN_ID].en) !== -1) {
+                            renStore[REN_ID].en = REN_NEW_EN; rsDirty = true;
+                        }
+                        if (REN_OLD_ZH.indexOf(renStore[REN_ID].zh) !== -1) {
+                            renStore[REN_ID].zh = REN_NEW_ZH; rsDirty = true;
+                        }
+                        if (rsDirty) localStorage.setItem(RENAME_KEY, JSON.stringify(renStore));
+                    }
+                } catch (e) { console.warn('[company-seed] Labis (Austin 2) rename migration skipped', e); }
+                // ----------------------------------------------------------
                 // Auto-favourite the seeded farms so they pin to the top on
                 // first launch (matches the app's behaviour for user-added
                 // farms). Users can unpin freely afterwards.
@@ -2074,7 +2185,7 @@
                     favs = rawF ? (JSON.parse(rawF) || []) : [];
                     if (!Array.isArray(favs)) favs = [];
                 } catch (e) { favs = []; }
-                var seedIds = ["c_jh-labis-austin-1", "c_jh-labis-austin-2", "c_jh-segamat-buloh-kasap", "c_jh-chaah-baru", "c_jh-bekok", "c_jh-jementah", "c_jh-tenang-hot-spring"];
+                var seedIds = ["c_jh-labis-austin-2", "c_jh-segamat-buloh-kasap", "c_jh-chaah-baru", "c_jh-bekok", "c_jh-jementah", "c_jh-tenang-hot-spring"];
                 seedIds.forEach(function (id) {
                     if (favs.indexOf(id) === -1) favs.push(id);
                 });

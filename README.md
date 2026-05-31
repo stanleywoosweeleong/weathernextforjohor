@@ -29,8 +29,7 @@ like from inside the app.
 
 | English | 中文 | Coordinates |
 |---|---|---|
-| Labis (Austin 1) | 拉美士 1 | 2.41750, 103.04444 |
-| Labis (Austin 2) | 拉美士 2 | 2.42806, 103.03639 |
+| Labis - Austin | 拉美士 - Austin | 2.42806, 103.03639 |
 | Segamat Buloh Kasap | 昔加末 巫罗加什 | 2.527677, 102.772178 |
 | Chaah Baru | 三合港 | 2.148561, 103.052319 |
 | Bekok | 彼咯 | 2.305833, 103.091389 |
@@ -97,7 +96,7 @@ The service worker caches the app shell. When you push changes, bump the
 their next visit. The current value is:
 
 ```
-wnext-weathernextforjohor-202605291008
+wnext-weathernextforjohor-202605310711
 ```
 
 ---
