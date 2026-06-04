@@ -12,7 +12,7 @@
 // Jementah/Tenang), seed version jh-arch1. bump CACHE_VERSION on each release
 // ============================================================
 
-const CACHE_VERSION = 'wnext-weathernextforjohor-202606041124';
+const CACHE_VERSION = 'wnext-weathernextforjohor-202606041130';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;

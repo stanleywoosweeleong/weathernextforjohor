@@ -5350,7 +5350,16 @@
             const fetchBatch = async (locations, model) => {
                 const lats = locations.map(l => l.lat).join(','), lngs = locations.map(l => l.lng).join(',');
                 const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lngs}&hourly=temperature_2m,precipitation_probability&models=${model}&timezone=auto&forecast_days=2`;
-                const res = await fetch(url, { signal });
+                // Use fetchWithRetry, not raw fetch — the bulk landing fetch is the
+                // most user-visible request (paints the home list), so a transient
+                // failure here should not just flip status to "Network Error" and
+                // leave the user staring at stale cards. fetchWithRetry handles
+                // 429/5xx with exponential backoff, recognises Open-Meteo's
+                // concurrent-request throttle, and on a thrown error (e.g. a TCP
+                // ERR_CONNECTION_CLOSED) retries the request rather than letting
+                // it propagate. AbortSignal is passed through opts so a pull-to-
+                // refresh / re-fetch still cancels in-flight retries correctly.
+                const res = await fetchWithRetry(url, { signal });
                 const json = await res.json();
                 // Return results paired with the exact locations they belong to, so mapping
                 // back to weatherData[id] is correct regardless of model grouping/order.
