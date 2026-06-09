@@ -75,7 +75,7 @@ app. It works offline after the first visit (service-worker cached).
 
 ## Seeded locations
 
-On first launch the app seeds the six farms below. They are auto-favourited and
+On first launch the app seeds the ten farms below. They are auto-favourited and
 can be renamed, edited, or deleted freely afterwards. Add as many more farms as
 you like from inside the app. Each seeded farm carries a default crop
 (**durian**) and a terrain zone, both editable in the app.
@@ -88,6 +88,10 @@ you like from inside the app. Each seeded farm carries a default crop
 | Bekok | 彼咯 | 2.305833, 103.091389 | sheltered basin |
 | Jementah | 利民达 | 2.433331, 102.683331 | open plain |
 | Tenang Hot Spring | 丁能 热水池 | 2.481236, 103.058050 | sheltered basin |
+| Parit Sulong | 巴力士隆 | 1.981365, 102.878993 | open plain |
+| Ayer Hitam | 亚依淡 | 1.882181, 103.205039 | open plain |
+| Tangkak | 东甲 | 2.249413, 102.532254 | open plain |
+| Batu Pahat | 峇株巴辖 | 2.018361, 102.878711 | open plain |
 
 The terrain zone (riverine / sheltered basin / open plain / coastal) only
 adjusts the disease-risk weighting. The zones above are sensible defaults from
@@ -96,8 +100,10 @@ the farm locations and can be refined per farm in the app.
 The app also seeds a default user display name (**Austin**),
 which stays editable via **Edit Name** in the app.
 
-This build carries the seed version **`jh-arch1`** (the lowland-architecture
-seed), which re-applies the six farms with their crop/zone tags. Existing
+This build carries the seed version **`jh-arch2`** (the lowland-architecture
+seed, bumped from `jh-arch1` on 2026-06-09 to add four south-Johor farms —
+Parit Sulong, Ayer Hitam, Tangkak, Batu Pahat — to the original six). The
+seed-merge re-applies any missing farms with their crop/zone tags. Existing
 installs pick this up automatically on their next visit — no need to clear data.
 Any farm a user renamed, moved, or customised themselves is left untouched.
 
@@ -150,7 +156,7 @@ The service worker caches the app shell. When you push changes, bump the
 their next visit. The current value is:
 
 ```
-wnext-weathernextforjohor-202606090330
+wnext-weathernextforjohor-202606090939
 ```
 
 ---
