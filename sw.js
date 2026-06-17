@@ -10,8 +10,10 @@
 // 'data stale' warning). Identity: namespace weathernextforjohor, appId
 // wnext-ag-v41-weathernextforjohor, 10 seed farms (Labis/Segamat/Chaah/Bekok/
 // Jementah/Tenang/Parit Sulong/Ayer Hitam/Tangkak/Batu Pahat), seed version
-// jh-arch2 (was jh-arch1 — bumped 2026-06-09 to seed 4 new south-Johor farms
-// for existing installs). bump CACHE_VERSION on each release
+// jh-arch3 (jh-arch1→jh-arch2 added the 4 south-Johor farms 2026-06-09;
+// jh-arch2→jh-arch3 corrected Batu Pahat's seeded coords from 2.018361,
+// 102.878711 to 1.762222, 102.987500 — safety-gated against user-moved
+// farms). bump CACHE_VERSION on each release
 // ------------------------------------------------------------
 // BROADCAST CLARITY PORT (from Raub v1.3.0–v1.3.14, applied 2026-06-05):
 // the WhatsApp broadcast text builder (buildBroadcastText) was replaced wholesale
@@ -43,7 +45,7 @@
 // 'overnight/夜间/malam' wording — now day-agnostic morning wording (清晨有浓雾
 // / Dense fog in the morning / Kabus tebal waktu pagi). Identity unchanged.
 
-const CACHE_VERSION = 'wnext-weathernextforjohor-202606091130';
+const CACHE_VERSION = 'wnext-weathernextforjohor-202606172147';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const WEATHER_CACHE = `${CACHE_VERSION}-weather`;

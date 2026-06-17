@@ -91,7 +91,7 @@ you like from inside the app. Each seeded farm carries a default crop
 | Parit Sulong | 巴力士隆 | 1.981365, 102.878993 | open plain |
 | Ayer Hitam | 亚依淡 | 1.882181, 103.205039 | open plain |
 | Tangkak | 东甲 | 2.249413, 102.532254 | open plain |
-| Batu Pahat | 峇株巴辖 | 2.018361, 102.878711 | open plain |
+| Batu Pahat | 峇株巴辖 | 1.762222, 102.987500 | open plain |
 
 The terrain zone (riverine / sheltered basin / open plain / coastal) only
 adjusts the disease-risk weighting. The zones above are sensible defaults from
@@ -100,10 +100,20 @@ the farm locations and can be refined per farm in the app.
 The app also seeds a default user display name (**Austin**),
 which stays editable via **Edit Name** in the app.
 
-This build carries the seed version **`jh-arch2`** (the lowland-architecture
-seed, bumped from `jh-arch1` on 2026-06-09 to add four south-Johor farms —
-Parit Sulong, Ayer Hitam, Tangkak, Batu Pahat — to the original six). The
-seed-merge re-applies any missing farms with their crop/zone tags. Existing
+This build carries the seed version **`jh-arch3`**. Version history:
+
+- **`jh-arch1`** — initial lowland-architecture seed (6 farms: Labis, Segamat,
+  Chaah, Bekok, Jementah, Tenang).
+- **`jh-arch2`** (2026-06-09) — added four south-Johor farms: Parit Sulong,
+  Ayer Hitam, Tangkak, Batu Pahat.
+- **`jh-arch3`** — corrected Batu Pahat's seeded coordinates from the original
+  `2.018361, 102.878711` (an inland river-plain area further north) to
+  `1.762222, 102.987500`, closer to the actual town/orchard cluster. The
+  correction is safety-gated: an existing install only has Batu Pahat moved if
+  its stored coords still match the auto-seeded values (within ~11 m), so any
+  farm a user re-positioned themselves is left untouched.
+
+The seed-merge re-applies any missing farms with their crop/zone tags. Existing
 installs pick this up automatically on their next visit — no need to clear data.
 Any farm a user renamed, moved, or customised themselves is left untouched.
 
@@ -156,7 +166,7 @@ The service worker caches the app shell. When you push changes, bump the
 their next visit. The current value is:
 
 ```
-wnext-weathernextforjohor-202606091130
+wnext-weathernextforjohor-202606172147
 ```
 
 ---
